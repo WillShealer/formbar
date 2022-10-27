@@ -48,7 +48,10 @@
 
 
 <div class="container"></div>
-<canvas id='virtualbar' style="height:900px; width:969px"></canvas>
+<canvas id='thumbs' style="height:900px; width:969px"></canvas>
+
+<!-- <div class="container"></div>
+<canvas id='abcd' style="height:900px; width:969px"></canvas> -->
 
 
 {% endblock %}
@@ -60,18 +63,19 @@
 
 <script>
   
-  var mychart = document.getElementById('virtualbar').getContext("2d");
+  var mychart = document.getElementById('thumbs').getContext("2d");
  
-  var doughnutChart = new Chart(mychart, {
+  var thumbsChart = new Chart(mychart, {
     type: 'doughnut',
     data: {
-      labels: ["Up", "Wiggle", "Down"],
+      labels: ["Up", "Wiggle", "Down", "None"],
       datasets: [{
         backgroundColor: [
           "#00ff00",
           "#00ffff",
-          "#ff0000"],
-        data: [0, 0, 0]
+          "#ff0000",
+          "#FFFFFF"],
+        data: [0, 0, 0, 0]
       }]
     },
     options: {
@@ -90,9 +94,7 @@
         }
       }
     }
-  });
-  
-  
+  });  
   
   let pixRes;
 
@@ -106,6 +108,7 @@
       var up = 0
       var wiggle = 0
       var down = 0
+      var none = 0
 
       
       for (const key of Object.keys(pixRes)) {
@@ -124,10 +127,23 @@
           down++
           console.log('found down');
         }
+        if (pixRes[key].thumb == "") {
+          none++
+          console.log('found none');
+        }
         
       }
-      doughnutChart.data.datasets[0].data = [up, wiggle, down];
-      doughnutChart.update();
+      if (up >= 1 && down == 0 && wiggle == 0 && none == 0){
+        thumbsChart.data.labels = ['MAX GAMER']
+        thumbsChart.data.datasets[0].backgroundColor = ['#BF40BF']
+        thumbsChart.data.datasets[0].data = [up];
+        thumbsChart.update();
+      } else {
+        thumbsChart.data.labels = ["Up", "Wiggle", "Down", "Not Submitted"]
+        thumbsChart.data.datasets[0].backgroundColor = ["#00ff00","#00ffff","#ff0000", "#FFFFFF"]
+        thumbsChart.data.datasets[0].data = [up, wiggle, down, none];
+        thumbsChart.update();
+      }
     }
   pixRequest.send(null);
   }
